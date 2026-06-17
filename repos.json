@@ -1,5 +1,25 @@
 [
   {
+    "name": "project-tracker-template",
+    "description": "Personal GitHub project dashboard \u2014 fork, fill in 4 fields, deploy. Auto-updates, daily email digest, AI prompts.",
+    "private": false,
+    "language": "HTML",
+    "created_at": "2026-06-17",
+    "pushed_at": "2026-06-17",
+    "url": "https://github.com/hotbullet/project-tracker-template",
+    "homepage": "https://tracker.stayflowhq.com"
+  },
+  {
+    "name": "project-tracker",
+    "description": "Personal project dashboard \u2014 tracks all GitHub repos with status, AI prompts, and daily stale alerts.",
+    "private": true,
+    "language": "HTML",
+    "created_at": "2026-06-17",
+    "pushed_at": "2026-06-17",
+    "url": "https://github.com/hotbullet/project-tracker",
+    "homepage": "https://tracker.stayflowhq.com"
+  },
+  {
     "name": "repo-vitals",
     "description": "Auto-updates project tracker data every 6 hours",
     "private": false,
