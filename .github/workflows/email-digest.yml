@@ -2,11 +2,11 @@ name: Daily Stale Project Digest
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       threshold_days:
-        description: 'Alert after how many days idle'
+        description: 'Alert after how many days idle (overrides config.json)'
         required: false
         default: ''
       to_email:
@@ -23,14 +23,66 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check schedule from config.json
+        id: check
+        run: |
+          python3 << 'EOF'
+          import json, sys
+          from datetime import datetime, timezone
+
+          with open("config.json") as f:
+              cfg = json.load(f)
+
+          ec = cfg["email"]
+          target_hour = int(ec.get("digest_hour_utc", 2))
+          digest_days = ec.get("digest_days", "daily").lower()
+
+          now = datetime.now(timezone.utc)
+          current_hour = now.hour
+          current_day  = now.strftime("%A").lower()
+
+          day_map = {
+              "daily": True,
+              "monday": current_day == "monday",
+              "tuesday": current_day == "tuesday",
+              "wednesday": current_day == "wednesday",
+              "thursday": current_day == "thursday",
+              "friday": current_day == "friday",
+              "saturday": current_day == "saturday",
+              "sunday": current_day == "sunday",
+              "weekdays": current_day in ["monday","tuesday","wednesday","thursday","friday"],
+              "weekends": current_day in ["saturday","sunday"],
+          }
+
+          day_ok  = day_map.get(digest_days, True)
+          hour_ok = current_hour == target_hour
+
+          if day_ok and hour_ok:
+              print("skip=false")
+              with open("/tmp/run_flag", "w") as f: f.write("run")
+          else:
+              print(f"skip=true (hour={current_hour} target={target_hour} day={current_day} days={digest_days})")
+              with open("/tmp/run_flag", "w") as f: f.write("skip")
+          EOF
+
+          FLAG=$(cat /tmp/run_flag)
+          if [ "$FLAG" = "skip" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and send digest email
+        if: steps.check.outputs.skip == 'false'
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           INPUT_THRESHOLD: ${{ inputs.threshold_days }}
           INPUT_EMAIL: ${{ inputs.to_email }}
         run: |
           python3 << 'EOF'
-          import json, os
+          import json, os, smtplib
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
           from datetime import datetime, timezone
 
           with open("config.json") as f:
@@ -108,15 +160,11 @@ jobs:
               <tbody>{rows}</tbody>
             </table>
             <div style="padding:20px 24px;border-top:1px solid #f0f0ec;">
-              <p style="font-size:12px;color:#aaa;margin:0 0 4px;">Alert threshold: {THRESHOLD_DAYS} days · Updates every {cfg['tracker']['update_interval_hours']}h from GitHub</p>
+              <p style="font-size:12px;color:#aaa;margin:0 0 4px;">Threshold: {THRESHOLD_DAYS} days · Updates every {cfg['tracker']['update_interval_hours']}h</p>
               <a href="{TRACKER_URL}" style="font-size:13px;font-weight:500;color:#534AB7;text-decoration:none;">Open tracker →</a>
             </div>
           </div>
           </body></html>"""
-
-          import smtplib
-          from email.mime.multipart import MIMEMultipart
-          from email.mime.text import MIMEText
 
           subject = f"[tracker] {len(stale)} project{'s' if len(stale) != 1 else ''} idle — longest: {longest['name']} ({longest['days']}d)"
           msg = MIMEMultipart("alternative")

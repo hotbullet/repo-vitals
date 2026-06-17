@@ -2,7 +2,7 @@ name: Update Repo Vitals
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,10 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check interval from config.json
+        id: check
+        run: |
+          INTERVAL=$(python3 -c "import json; print(json.load(open('config.json'))['tracker']['update_interval_hours'])")
+          echo "Configured interval: ${INTERVAL}h"
+
+          LAST=$(git log -1 --format="%ct" -- repos.json 2>/dev/null || echo 0)
+          NOW=$(date +%s)
+          DIFF=$(( (NOW - LAST) / 3600 ))
+          echo "Hours since last update: $DIFF"
+
+          if [ "$DIFF" -lt "$INTERVAL" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Too soon — skipping this run."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Fetch repos and write repos.json
+        if: steps.check.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.VITALS_READ_TOKEN }}
         run: |
@@ -38,6 +58,7 @@ jobs:
           " > repos.json
 
       - name: Commit if changed
+        if: steps.check.outputs.skip == 'false'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
