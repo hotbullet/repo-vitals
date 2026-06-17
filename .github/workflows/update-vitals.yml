@@ -50,6 +50,7 @@ jobs:
               'description': r['description'] or '',
               'private': r['private'],
               'language': r['language'] or '—',
+              'created_at': r['created_at'][:10] if r['created_at'] else None,
               'pushed_at': r['pushed_at'][:10] if r['pushed_at'] else None,
               'url': r['html_url'],
               'homepage': r['homepage'] or None,
