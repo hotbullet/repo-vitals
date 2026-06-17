@@ -1,0 +1,12 @@
+{
+  "email": {
+    "to": "manit.sony@gmail.com",
+    "digest_time_utc": "02:00",
+    "stale_threshold_days": 3,
+    "exclude_repos": ["repo-vitals", "slipmemo", "slipmemo-flutter"]
+  },
+  "tracker": {
+    "url": "https://tracker.stayflowhq.com",
+    "update_interval_hours": 6
+  }
+}

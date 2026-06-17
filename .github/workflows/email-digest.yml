@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+    inputs:
+      threshold_days:
+        description: 'Alert after how many days idle'
+        required: false
+        default: ''
+      to_email:
+        description: 'Send to this email (overrides config.json)'
+        required: false
+        default: ''
 
 jobs:
   digest:
@@ -17,28 +26,33 @@ jobs:
       - name: Build and send digest email
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          GH_TOKEN: ${{ secrets.VITALS_READ_TOKEN }}
+          INPUT_THRESHOLD: ${{ inputs.threshold_days }}
+          INPUT_EMAIL: ${{ inputs.to_email }}
         run: |
           python3 << 'EOF'
           import json, urllib.request, urllib.error, os
           from datetime import datetime, timezone
 
-          THRESHOLD_DAYS = 3
-          TO_EMAIL       = "manit.sony@gmail.com"
+          with open("config.json") as f:
+              cfg = json.load(f)
+
+          ec = cfg["email"]
+          THRESHOLD_DAYS = int(os.environ.get("INPUT_THRESHOLD") or ec["stale_threshold_days"])
+          TO_EMAIL       = os.environ.get("INPUT_EMAIL") or ec["to"]
+          EXCLUDE        = set(ec.get("exclude_repos", []))
+          TRACKER_URL    = cfg["tracker"]["url"]
           FROM_EMAIL     = "onboarding@resend.dev"
-          TRACKER_URL    = "https://tracker.stayflowhq.com"
 
           with open("repos.json") as f:
               repos = json.load(f)
 
-          SKIP = {"repo-vitals"}
           today = datetime.now(timezone.utc)
 
           stale = []
           for r in repos:
-              if r["name"] in SKIP or not r.get("pushed_at"):
+              if r["name"] in EXCLUDE or not r.get("pushed_at"):
                   continue
-              pushed = datetime.fromisoformat(r["pushed_at"].replace("Z", "+00:00"))
+              pushed = datetime.fromisoformat(r["pushed_at"].replace("Z", "+00:00") if "T" in r["pushed_at"] else r["pushed_at"] + "T00:00:00+00:00")
               days = (today - pushed).days
               if days >= THRESHOLD_DAYS:
                   stale.append({**r, "days": days})
@@ -46,7 +60,7 @@ jobs:
           stale.sort(key=lambda r: r["days"], reverse=True)
 
           if not stale:
-              print("All repos pushed within 3 days — no email needed.")
+              print(f"All repos pushed within {THRESHOLD_DAYS} days — no email needed.")
               exit(0)
 
           def urgency(days):
@@ -57,7 +71,7 @@ jobs:
           rows = ""
           for r in stale:
               icon, color, bg = urgency(r["days"])
-              label = f"{r['days']} day{'s' if r['days']!=1 else ''}"
+              label = f"{r['days']} day{'s' if r['days'] != 1 else ''}"
               desc  = r.get("description") or "no description"
               rows += f"""
               <tr>
@@ -77,15 +91,13 @@ jobs:
           <html><head><meta charset="UTF-8"></head>
           <body style="margin:0;padding:0;background:#f9f9f8;font-family:Inter,system-ui,sans-serif;">
           <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;border:1px solid #e8e8e4;overflow:hidden;">
-
             <div style="padding:24px 24px 0;">
               <p style="font-size:12px;color:#aaa;margin:0 0 8px;">hotbullet / daily digest · {today.strftime('%A, %d %b %Y')}</p>
               <h1 style="font-size:20px;font-weight:600;color:#1a1a18;margin:0 0 8px;">
-                {len(stale)} project{'s' if len(stale)!=1 else ''} waiting for you
+                {len(stale)} project{'s' if len(stale) != 1 else ''} waiting for you
               </h1>
               <p style="font-size:14px;color:#666;margin:0 0 20px;line-height:1.6;">{nudge}</p>
             </div>
-
             <table style="width:100%;border-collapse:collapse;">
               <thead>
                 <tr style="background:#f9f9f8;">
@@ -95,19 +107,17 @@ jobs:
               </thead>
               <tbody>{rows}</tbody>
             </table>
-
-            <div style="padding:20px 24px;border-top:1px solid #f0f0ec;display:flex;align-items:center;justify-content:space-between;">
-              <p style="font-size:12px;color:#aaa;margin:0;">Updates every 6 hours from GitHub</p>
+            <div style="padding:20px 24px;border-top:1px solid #f0f0ec;">
+              <p style="font-size:12px;color:#aaa;margin:0 0 4px;">Alert threshold: {THRESHOLD_DAYS} days · Updates every {cfg['tracker']['update_interval_hours']}h from GitHub</p>
               <a href="{TRACKER_URL}" style="font-size:13px;font-weight:500;color:#534AB7;text-decoration:none;">Open tracker →</a>
             </div>
-
           </div>
           </body></html>"""
 
           payload = json.dumps({
               "from":    FROM_EMAIL,
               "to":      [TO_EMAIL],
-              "subject": f"[tracker] {len(stale)} project{'s' if len(stale)!=1 else ''} idle — longest: {longest['name']} ({longest['days']}d)",
+              "subject": f"[tracker] {len(stale)} project{'s' if len(stale) != 1 else ''} idle — longest: {longest['name']} ({longest['days']}d)",
               "html":    html,
           }).encode()
 
@@ -124,7 +134,7 @@ jobs:
           try:
               with urllib.request.urlopen(req) as resp:
                   result = json.loads(resp.read())
-                  print(f"Email sent — id: {result.get('id')}")
+                  print(f"Email sent to {TO_EMAIL} — id: {result.get('id')}")
           except urllib.error.HTTPError as e:
               print(f"Failed: {e.status} {e.read().decode()}")
               exit(1)
