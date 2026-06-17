@@ -30,7 +30,7 @@ jobs:
           INPUT_EMAIL: ${{ inputs.to_email }}
         run: |
           python3 << 'EOF'
-          import json, urllib.request, urllib.error, os
+          import json, os
           from datetime import datetime, timezone
 
           with open("config.json") as f:
@@ -114,28 +114,23 @@ jobs:
           </div>
           </body></html>"""
 
-          payload = json.dumps({
-              "from":    FROM_EMAIL,
-              "to":      [TO_EMAIL],
-              "subject": f"[tracker] {len(stale)} project{'s' if len(stale) != 1 else ''} idle — longest: {longest['name']} ({longest['days']}d)",
-              "html":    html,
-          }).encode()
+          import smtplib
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
 
-          req = urllib.request.Request(
-              "https://api.resend.com/emails",
-              data=payload,
-              headers={
-                  "Authorization": f"Bearer {os.environ['RESEND_API_KEY']}",
-                  "Content-Type":  "application/json",
-              },
-              method="POST",
-          )
+          subject = f"[tracker] {len(stale)} project{'s' if len(stale) != 1 else ''} idle — longest: {longest['name']} ({longest['days']}d)"
+          msg = MIMEMultipart("alternative")
+          msg["Subject"] = subject
+          msg["From"]    = FROM_EMAIL
+          msg["To"]      = TO_EMAIL
+          msg.attach(MIMEText(html, "html"))
 
           try:
-              with urllib.request.urlopen(req) as resp:
-                  result = json.loads(resp.read())
-                  print(f"Email sent to {TO_EMAIL} — id: {result.get('id')}")
-          except urllib.error.HTTPError as e:
-              print(f"Failed: {e.status} {e.read().decode()}")
+              with smtplib.SMTP_SSL("smtp.resend.com", 465) as s:
+                  s.login("resend", os.environ["RESEND_API_KEY"])
+                  s.sendmail(FROM_EMAIL, TO_EMAIL, msg.as_string())
+                  print(f"Email sent to {TO_EMAIL}")
+          except Exception as e:
+              print(f"Failed: {e}")
               exit(1)
           EOF
