@@ -10,14 +10,14 @@
     "homepage": null
   },
   {
-    "name": "project-tracker",
-    "description": "Personal project dashboard \u2014 tracks all GitHub repos with status, AI prompts, and daily stale alerts.",
-    "private": true,
-    "language": "HTML",
-    "created_at": "2026-06-17",
+    "name": "groove-hardware",
+    "description": "GROOVE \u2014 ESP32-S3 generative drum machine / MIDI controller hardware design",
+    "private": false,
+    "language": "Python",
+    "created_at": "2026-06-18",
     "pushed_at": "2026-06-18",
-    "url": "https://github.com/hotbullet/project-tracker",
-    "homepage": "https://tracker.stayflowhq.com"
+    "url": "https://github.com/hotbullet/groove-hardware",
+    "homepage": null
   },
   {
     "name": "repo-vitals",
@@ -28,6 +28,16 @@
     "pushed_at": "2026-06-18",
     "url": "https://github.com/hotbullet/repo-vitals",
     "homepage": null
+  },
+  {
+    "name": "project-tracker",
+    "description": "Personal project dashboard \u2014 tracks all GitHub repos with status, AI prompts, and daily stale alerts.",
+    "private": true,
+    "language": "HTML",
+    "created_at": "2026-06-17",
+    "pushed_at": "2026-06-18",
+    "url": "https://github.com/hotbullet/project-tracker",
+    "homepage": "https://tracker.stayflowhq.com"
   },
   {
     "name": "project-tracker-template",
