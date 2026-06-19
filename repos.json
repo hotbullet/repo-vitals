@@ -10,6 +10,16 @@
     "homepage": null
   },
   {
+    "name": "groove-ensemble",
+    "description": "",
+    "private": true,
+    "language": "C++",
+    "created_at": "2026-06-19",
+    "pushed_at": "2026-06-19",
+    "url": "https://github.com/hotbullet/groove-ensemble",
+    "homepage": null
+  },
+  {
     "name": "riankeng",
     "description": "",
     "private": true,
