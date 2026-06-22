@@ -1,5 +1,15 @@
 [
   {
+    "name": "riantor",
+    "description": "Riantor.com free-first academic English platform",
+    "private": true,
+    "language": "TypeScript",
+    "created_at": "2026-06-22",
+    "pushed_at": "2026-06-22",
+    "url": "https://github.com/hotbullet/riantor",
+    "homepage": null
+  },
+  {
     "name": "riankeng",
     "description": "",
     "private": true,
