@@ -1,15 +1,5 @@
 [
   {
-    "name": "TennisRecap",
-    "description": "",
-    "private": false,
-    "language": "TypeScript",
-    "created_at": "2026-06-24",
-    "pushed_at": "2026-06-24",
-    "url": "https://github.com/hotbullet/TennisRecap",
-    "homepage": "https://tennis-recap.vercel.app"
-  },
-  {
     "name": "repo-vitals",
     "description": "Auto-updates project tracker data every 6 hours",
     "private": false,
@@ -18,6 +8,16 @@
     "pushed_at": "2026-06-24",
     "url": "https://github.com/hotbullet/repo-vitals",
     "homepage": null
+  },
+  {
+    "name": "TennisRecap",
+    "description": "",
+    "private": false,
+    "language": "TypeScript",
+    "created_at": "2026-06-24",
+    "pushed_at": "2026-06-24",
+    "url": "https://github.com/hotbullet/TennisRecap",
+    "homepage": "https://tennis-recap.vercel.app"
   },
   {
     "name": "riankeng",
