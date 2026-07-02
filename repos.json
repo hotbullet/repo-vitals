@@ -10,12 +10,22 @@
     "homepage": null
   },
   {
+    "name": "groove-ensemble",
+    "description": "",
+    "private": true,
+    "language": "C++",
+    "created_at": "2026-06-19",
+    "pushed_at": "2026-07-02",
+    "url": "https://github.com/hotbullet/groove-ensemble",
+    "homepage": null
+  },
+  {
     "name": "repo-vitals",
     "description": "Auto-updates project tracker data every 6 hours",
     "private": false,
     "language": "\u2014",
     "created_at": "2026-06-17",
-    "pushed_at": "2026-07-01",
+    "pushed_at": "2026-07-02",
     "url": "https://github.com/hotbullet/repo-vitals",
     "homepage": null
   },
@@ -47,16 +57,6 @@
     "created_at": "2026-06-11",
     "pushed_at": "2026-06-28",
     "url": "https://github.com/hotbullet/SlipThaiReboot",
-    "homepage": null
-  },
-  {
-    "name": "groove-ensemble",
-    "description": "",
-    "private": true,
-    "language": "C++",
-    "created_at": "2026-06-19",
-    "pushed_at": "2026-06-27",
-    "url": "https://github.com/hotbullet/groove-ensemble",
     "homepage": null
   },
   {
