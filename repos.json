@@ -1,5 +1,15 @@
 [
   {
+    "name": "ZoomDownloader",
+    "description": "",
+    "private": true,
+    "language": "Python",
+    "created_at": "2026-07-18",
+    "pushed_at": "2026-07-18",
+    "url": "https://github.com/hotbullet/ZoomDownloader",
+    "homepage": null
+  },
+  {
     "name": "repo-vitals",
     "description": "Auto-updates project tracker data every 6 hours",
     "private": false,
