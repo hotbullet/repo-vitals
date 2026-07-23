@@ -1,5 +1,15 @@
 [
   {
+    "name": "tennis-positioning-simulator",
+    "description": "",
+    "private": true,
+    "language": "\u2014",
+    "created_at": "2026-07-23",
+    "pushed_at": "2026-07-23",
+    "url": "https://github.com/hotbullet/tennis-positioning-simulator",
+    "homepage": null
+  },
+  {
     "name": "repo-vitals",
     "description": "Auto-updates project tracker data every 6 hours",
     "private": false,
