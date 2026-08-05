@@ -10,16 +10,6 @@
     "homepage": null
   },
   {
-    "name": "line-expense",
-    "description": "LINE-first multi-user expense and class package tracker",
-    "private": true,
-    "language": "TypeScript",
-    "created_at": "2026-08-04",
-    "pushed_at": "2026-08-05",
-    "url": "https://github.com/hotbullet/line-expense",
-    "homepage": null
-  },
-  {
     "name": "repo-vitals",
     "description": "Auto-updates project tracker data every 6 hours",
     "private": false,
@@ -27,6 +17,16 @@
     "created_at": "2026-06-17",
     "pushed_at": "2026-08-05",
     "url": "https://github.com/hotbullet/repo-vitals",
+    "homepage": null
+  },
+  {
+    "name": "line-expense",
+    "description": "LINE-first multi-user expense and class package tracker",
+    "private": true,
+    "language": "TypeScript",
+    "created_at": "2026-08-04",
+    "pushed_at": "2026-08-05",
+    "url": "https://github.com/hotbullet/line-expense",
     "homepage": null
   },
   {
