@@ -90,13 +90,13 @@
     "homepage": null
   },
   {
-    "name": "esp-studio-dev-node-v1",
+    "name": "esp-studio-pods-remote-v1",
     "description": "",
     "private": true,
     "language": "C++",
     "created_at": "2026-07-23",
     "pushed_at": "2026-08-14",
-    "url": "https://github.com/hotbullet/esp-studio-dev-node-v1",
+    "url": "https://github.com/hotbullet/esp-studio-pods-remote-v1",
     "homepage": null
   },
   {
